@@ -15,7 +15,7 @@ This project enables:
 ## Project Structure
 
 ```
-snowmcp/
+snowflake_vscode_mcp/
 ├── sql/                              # All SQL setup scripts
 │   ├── 01-setup/                    # Database and schema initialization
 │   │   ├── 01_database_schema_setup.sql
@@ -33,12 +33,12 @@ snowmcp/
 │   └── 05-mcp-server/               # MCP server setup
 │       └── 01_mcp_server_setup.sql
 ├── config/                          # Configuration files
-│   ├── mcp.json.template            # MCP configuration template (safe to share)
-│   └── MCP_SETUP.md                 # Configuration instructions
+│   └── mcp.json.template            # MCP configuration template (safe to share)
 ├── docs/                            # Documentation
-├── create_business_report.py         # Python script for reporting
-├── create_cortex_guide.py           # Python script for Cortex setup
-└── README.md                        # This file
+├── SETUP_COMPLETE.sql               # Initial database and schema setup
+├── NETWORK_POLICY.sql               # IP whitelist security policy
+├── README.md                        # This file
+└── .gitignore                       # Git ignore rules
 ```
 
 ## Data Architecture
@@ -68,62 +68,116 @@ snowmcp/
 - Uses embeddings for intelligent retrieval
 - Supports document parsing with OCR
 
+## Why Snowflake MCP with Cortex Agents?
+
+Instead of jumping between Snowflake UI and your IDE, Snowflake MCP transforms VS Code Copilot into a **data-aware assistant**:
+
+- **Intelligence where you type**: Your VS Code Copilot becomes data-aware, using the MCP bridge to ask Cortex Agents for ground truth about your Snowflake data
+- **Zero-Copy Context**: No need to copy-paste schemas; the agent "sees" the schema through the MCP server
+- **Native Orchestration**: Ask Copilot to "summarize the latest sales trends using the Cortex Analyst agent," and results appear right in your sidebar
+- **Reduced Context Switching**: Your data exploration stays in VS Code
+- **Faster Development**: Natural language queries beat manual SQL worksheet navigation
+- **Better Developer Experience**: Copilot understands your data structure and can assist proactively
+
 ## Getting Started
 
 ### Prerequisites
 - Snowflake account with Cortex capabilities
 - VS Code with MCP extension
 - Python 3.8+ (for helper scripts)
+- Public IP address (for network policy whitelist)
+- Snowflake Personal Access Token (PAT)
 
-### Step 1: Configure MCP
+### Step 1: Execute the Setup Scripts
+
+1. In your Snowflake environment, run:
+   ```sql
+   -- Execute: SETUP_COMPLETE.sql
+   ```
+   This creates the required databases (e.g., `TPCH_DATA_PRODUCT`) and analytics schemas needed for the MCP server and Cortex tools.
+
+2. Run the remaining SQL scripts in order:
+   ```sql
+   -- sql/01-setup/01_database_schema_setup.sql
+   -- sql/01-setup/02_stage_setup.sql
+   -- sql/02-tables/ (all files)
+   -- sql/03-semantic-views/ (all files)
+   -- sql/04-cortex/ (all files)
+   -- sql/05-mcp-server/ (all files)
+   ```
+
+### Step 2: Upload Reference PDFs to Snowflake Stage (Required)
+
+Cortex Search and Cortex Analyst rely on documents stored in Snowflake stages for unstructured context.
+
+1. Navigate in Snowflake UI: **Data → Databases → TPCH_DATA_PRODUCT**
+2. Open the configured internal stage (created by `SETUP_COMPLETE.sql`)
+3. Upload the PDF files located in the repo's `config/` directory
+
+### Step 3: Security First - Configure Network Policy
+
+Snowflake requires a secure handshake between your local machine and the MCP endpoint.
+
+1. Find your public IP address at [whatismyip.com](https://whatismyip.com)
+2. In your Snowflake environment, execute:
+   ```sql
+   -- Execute: NETWORK_POLICY.sql
+   -- Make sure to replace your public IP address
+   ```
+   This whitelists your IP address so only authorized machines can access your MCP server.
+
+   **Pro Tip**: Store your public IP in a safe location. If your ISP changes it, you'll need to update the network policy.
+
+### Step 4: Configure VS Code
+
+VS Code needs to know where your Snowflake MCP server lives.
 
 1. Copy the template:
    ```bash
    cp config/mcp.json.template .vscode/mcp.json
    ```
 
-2. Update with your Snowflake credentials:
-   - Replace `{SNOWFLAKE_ACCOUNT}` with your account ID
-   - Replace `{SNOWFLAKE_JWT_TOKEN}` with your JWT token
-
-See [config/MCP_SETUP.md](config/MCP_SETUP.md) for detailed instructions.
-
-### Step 2: Execute SQL Setup
-
-Run the SQL scripts in order:
-
-1. **Setup**
-   ```sql
-   -- Run all files in sql/01-setup/
+2. Update the configuration with your Snowflake details:
+   ```json
+   {
+     "servers": {
+       "Snowflake": {
+         "url": "https://{SNOWFLAKE_ACCOUNT}.snowflakecomputing.com/api/v2/databases/TPCH_DATA_PRODUCT/schemas/ANALYTICS/mcp-servers/TPCH_PRODUCTS",
+         "headers": {
+           "Authorization": "Bearer {SNOWFLAKE_PAT_TOKEN}"
+         }
+       }
+     }
+   }
    ```
 
-2. **Create Tables & Views**
-   ```sql
-   -- Run all files in sql/02-tables/
-   ```
+3. Replace the placeholders:
+   - `{SNOWFLAKE_ACCOUNT}`: Your Snowflake account locator (find it in your Snowflake URL)
+   - `{SNOWFLAKE_PAT_TOKEN}`: Your Personal Access Token (generate in Snowflake → Admin → Users & Roles)
 
-3. **Create Semantic Views**
-   ```sql
-   -- Run all files in sql/03-semantic-views/
-   ```
+4. **Security Note**: Never commit this file to version control. Add `.vscode/mcp.json` to your `.gitignore`
 
-4. **Configure Cortex**
-   ```sql
-   -- Run all files in sql/04-cortex/
-   ```
+### Step 5: Activate the Connection
 
-5. **Initialize MCP Server**
-   ```sql
-   -- Run all files in sql/05-mcp-server/
-   ```
+1. Save your configuration
+2. Look for the **"Start Server"** option in your VS Code status bar or MCP extension pane
+3. Click to initialize the connection (you should see a confirmation message)
+4. Open the **Copilot Agent** chat and select **'add context'** → select **'tools'** in the dropdown
+5. Type **'Snowflake'** and select it as your active MCP tool
+6. Press enter to confirm
 
-### Step 3: Use in VS Code
+You're now connected! Your data is ready to talk.
 
-Once configured, you can:
+### Step 6: Query Your Data with Natural Language
 
-1. **Query the Semantic View**: Ask questions about sales performance
-2. **Search Products**: Use Cortex Search to find product information
-3. **Generate Reports**: Get AI-powered insights directly in VS Code
+This is where the magic happens. You can now ask Copilot questions like:
+
+- "What are the top-selling products in the TPCH dataset?"
+- "Which region generated the highest Total Net Revenue in December 1996?"
+- "List the top 5 nations by Total Orders for the 'FURNITURE' market segment."
+- "Find any internal reports discussing why the 'BUILDING' segment in CANADA had higher-than-average discounts in late 1996."
+
+Behind the scenes, Copilot uses the MCP server to fetch metadata and execute queries — all without you leaving your code editor.
 
 ## Key Features
 
@@ -147,6 +201,13 @@ Once configured, you can:
 - Two primary tools:
   - **PRODUCT_ANALYTICS_TPCH**: Cortex Search Service
   - **SV_SALES_PERFORMANCE**: Semantic View for Analytics
+
+## Key Takeaways
+
+✅ **Reduced Context Switching**: Your data exploration stays in VS Code  
+✅ **Faster Development**: Natural language queries beat manual SQL worksheet navigation  
+✅ **Better Developer Experience**: Copilot understands your data structure and can assist proactively  
+✅ **Security Built-in**: IP whitelisting and PAT tokens keep your data safe
 
 ## Sample Queries
 
@@ -200,6 +261,18 @@ LIMIT 5
 - [Cortex Analyst Guide](https://docs.snowflake.com/en/user-guide/cortex-analyst)
 - [Cortex Search Services](https://docs.snowflake.com/en/user-guide/cortex-search-service)
 - [TPCH Sample Data](https://docs.snowflake.com/en/user-guide/sample-data-tpch)
+
+## What's Next?
+
+Once you're comfortable with basic queries, explore advanced capabilities:
+
+- **Creating reusable data transformations**: Build custom SQL transformations for your specific use cases
+- **Building complex analytical workflows**: Chain multiple Cortex queries together for sophisticated analysis
+- **Sharing query patterns with your team**: Collaborate on common data patterns and queries
+
+The future of data engineering isn't about jumping between tools — it's about bringing the tools to where you work.
+
+**Ready to eliminate context-switching? Start with Step 1 above and connect Snowflake to VS Code today!**
 
 ## License
 
