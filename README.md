@@ -342,9 +342,6 @@ The future of data engineering isn't about jumping between tools — it's about 
 
 **Ready to eliminate context-switching? Start with Step 1 above and connect Snowflake to VS Code today!**
 
-## License
-
-[Choose your license - e.g., MIT, Apache 2.0]
 
 ## Support
 
