@@ -130,32 +130,61 @@ Snowflake requires a secure handshake between your local machine and the MCP end
 
 ### Step 4: Configure VS Code
 
-VS Code needs to know where your Snowflake MCP server lives.
+VS Code needs to know where your Snowflake MCP server lives. Use environment variables to keep credentials secure.
 
-1. Copy the template:
+#### Option A: Using Environment Variables (Recommended)
+
+1. Create a `.env` file in your project root:
+   ```bash
+   SNOWFLAKE_ACCOUNT=your_account_id
+   SNOWFLAKE_PAT_TOKEN=your_pat_token
+   ```
+
+2. **CRITICAL**: Add `.env` to `.gitignore` (already included in this repo)
+   ```bash
+   # Verify .gitignore contains:
+   .env
+   .env.local
+   .env.*.local
+   ```
+
+3. Copy the template and use environment variables:
    ```bash
    cp config/mcp.json.template .vscode/mcp.json
    ```
 
-2. Update the configuration with your Snowflake details:
+4. Update `.vscode/mcp.json` to reference environment variables:
    ```json
    {
      "servers": {
        "Snowflake": {
-         "url": "https://{SNOWFLAKE_ACCOUNT}.snowflakecomputing.com/api/v2/databases/TPCH_DATA_PRODUCT/schemas/ANALYTICS/mcp-servers/TPCH_PRODUCTS",
+         "url": "https://${SNOWFLAKE_ACCOUNT}.snowflakecomputing.com/api/v2/databases/TPCH_DATA_PRODUCT/schemas/ANALYTICS/mcp-servers/TPCH_PRODUCTS",
          "headers": {
-           "Authorization": "Bearer {SNOWFLAKE_PAT_TOKEN}"
+           "Authorization": "Bearer ${SNOWFLAKE_PAT_TOKEN}"
          }
        }
      }
    }
    ```
 
-3. Replace the placeholders:
+#### Option B: Direct Configuration (Development Only)
+
+If using direct configuration, follow these steps:
+
+1. Copy the template:
+   ```bash
+   cp config/mcp.json.template .vscode/mcp.json
+   ```
+
+2. Replace the placeholders:
    - `{SNOWFLAKE_ACCOUNT}`: Your Snowflake account locator (find it in your Snowflake URL)
    - `{SNOWFLAKE_PAT_TOKEN}`: Your Personal Access Token (generate in Snowflake → Admin → Users & Roles)
 
-4. **Security Note**: Never commit this file to version control. Add `.vscode/mcp.json` to your `.gitignore`
+**⚠️ CRITICAL Security Warning**: 
+- Never commit `.vscode/mcp.json` to version control
+- Never commit `.env` files with real credentials
+- Both are already listed in `.gitignore`—verify before committing
+- Use a **dedicated service user with Least Privilege** roles (e.g., read-only on specific schemas)
 
 ### Step 5: Activate the Connection
 
@@ -237,16 +266,55 @@ LIMIT 5
 
 ## Security Considerations
 
-⚠️ **Important**: Never commit `mcp.json` to version control
-- Store credentials in environment variables
-- Use the template file for sharing
-- Rotate JWT tokens regularly
-- Follow Snowflake security best practices
+### Authentication Methods
+
+**Tutorial Standard: Personal Access Token (PAT)**
+- Used in this tutorial for ease of setup
+- Generate in Snowflake → Admin → Users & Roles
+- Use a **dedicated service user account** with minimal required permissions only (Least Privilege)
+- Never use your admin account for this
+- Rotate tokens regularly (every 90 days recommended)
+
+**Production-Grade Alternatives:**
+
+- **Key-Pair Authentication** (Recommended for production)
+  - Generate and use RSA key pairs instead of tokens
+  - More secure than PAT tokens
+  - Cryptographically signed connections
+  - Setup: [Snowflake Key-Pair Authentication](https://docs.snowflake.com/en/user-guide/key-pair-auth)
+  
+- **OAuth 2.0** (Best for enterprise and teams)
+  - Delegated access without sharing credentials
+  - Supports single sign-on (SSO)
+  - Ideal for team collaboration
+  - Setup: [Snowflake OAuth](https://docs.snowflake.com/en/user-guide/oauth-intro)
+
+### Credential Management Best Practices
+
+✅ **DO:**
+- Store all credentials in `.env` files (this file is in `.gitignore` and won't be committed)
+- Use environment variables in configuration files
+- Create dedicated **service accounts** with **Least Privilege** (minimal permissions needed)
+- Rotate credentials regularly (every 90 days for PAT tokens)
+- Review `.gitignore` file to ensure sensitive files are excluded before every commit
+- Never commit `.vscode/mcp.json` with hardcoded credentials
+
+❌ **DO NOT:**
+- Hardcode credentials in any configuration files
+- Commit `.env`, `.vscode/mcp.json`, or `config/mcp.json` to version control
+- Use admin/personal accounts for service integrations
+- Share `.env` files via email, Slack, or any communication channel
+- Reuse the same credentials across multiple projects or environments
+- Store passwords in plain text anywhere in your codebase
 
 ## Files to Never Commit
-- `.vscode/mcp.json` - Contains credentials
-- `.env` - Environment variables
-- `config/mcp.json` - Actual configuration
+
+These are already in `.gitignore`, but verify before committing:
+- `.vscode/mcp.json` - Contains API credentials and PAT tokens
+- `.env` - Environment variables with secrets
+- `.env.local` - Local environment overrides
+- `.env.*.local` - Environment-specific overrides
+- `config/mcp.json` - Actual MCP configuration with credentials
 
 ## Contributing
 
