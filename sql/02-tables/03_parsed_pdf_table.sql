@@ -1,0 +1,7 @@
+-- Create table for parsing PDF data
+-- Stores extracted content from documents in the stage
+CREATE OR REPLACE TABLE PARSED_PRODPDF (
+    FILENAME VARCHAR(255),
+    EXTRACTED_CONTENT VARCHAR(16777216),
+    PARSE_DATE TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP
+);

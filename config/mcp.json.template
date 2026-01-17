@@ -1,0 +1,10 @@
+{
+  "servers": {
+    "Snowflake": {
+      "url": "https://{SNOWFLAKE_ACCOUNT}.snowflakecomputing.com/api/v2/databases/TPCH_DATA_PRODUCT/schemas/ANALYTICS/mcp-servers/TPCH_PRODUCTS",
+      "headers": {
+        "Authorization": "Bearer {SNOWFLAKE_PAT_TOKEN}"
+      }
+    }
+  }
+}

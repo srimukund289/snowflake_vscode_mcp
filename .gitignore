@@ -1,0 +1,53 @@
+# Environment variables and credentials
+.env
+.env.local
+.env.*.local
+
+# Sensitive configuration files
+.vscode/mcp.json
+config/mcp.json
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE and editor files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Project specific
+Product_Analytics_Business_Report.pdf
+product_analytics.csv
+
+# OS files
+Thumbs.db
+.DS_Store
