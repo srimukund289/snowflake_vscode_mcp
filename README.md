@@ -351,7 +351,6 @@ The future of data engineering isn't about jumping between tools — it's about 
 For issues or questions:
 1. Check the docs/ folder
 2. Review the SQL scripts
-3. Refer to [config/MCP_SETUP.md](config/MCP_SETUP.md)
 
 ---
 
