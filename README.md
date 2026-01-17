@@ -81,12 +81,50 @@ Instead of jumping between Snowflake UI and your IDE, Snowflake MCP transforms V
 
 ## Getting Started
 
-### Prerequisites
-- Snowflake account with Cortex capabilities
-- VS Code with MCP extension
-- Python 3.8+ (for helper scripts)
+### Quick Start (One-Click Setup - Under 5 Minutes)
+
+If you just want to get up and running quickly:
+
+```bash
+# 1. Clone or fork this repository
+git clone https://github.com/YOUR_USERNAME/snowflake_vscode_mcp.git
+cd snowflake_vscode_mcp
+
+# 2. Copy template files
+cp config/mcp.json.template .vscode/mcp.json
+# Create .env file for credentials (will NOT be committed)
+echo "SNOWFLAKE_ACCOUNT=your_account_id" > .env
+echo "SNOWFLAKE_PAT_TOKEN=your_pat_token" >> .env
+
+# 3. Install VS Code extensions from command line (optional)
+code --install-extension ms-copilot.copilot-chat
+code --install-extension Snowflake.snowflake-mcp
+
+# 4. Update .env with your actual credentials
+# Edit .env and replace placeholders
+```
+
+Then continue with detailed steps below.
+
+### Detailed Setup Guide
+
+**Required Snowflake Account Setup:**
+- Snowflake account with Cortex capabilities enabled
+- Personal Access Token (PAT) - to be generated later
 - Public IP address (for network policy whitelist)
-- Snowflake Personal Access Token (PAT)
+
+**Required VS Code Extensions:**
+1. **GitHub Copilot Chat** (ms-copilot.copilot-chat)
+   - Provides the AI-powered chat interface in VS Code
+   - Install: Open VS Code → Extensions → Search "GitHub Copilot Chat" → Install
+
+2. **MCP (Model Context Protocol)** (Snowflake.snowflake-mcp)
+   - Enables VS Code to connect to your Snowflake MCP server
+   - Install: Open VS Code → Extensions → Search "Snowflake MCP" → Install
+
+**Optional but Recommended:**
+- Python 3.8+ (for helper scripts and local testing)
+- Git (for version control)
 
 ### Step 1: Execute the Setup Scripts
 
@@ -307,6 +345,74 @@ LIMIT 5
 - Reuse the same credentials across multiple projects or environments
 - Store passwords in plain text anywhere in your codebase
 
+## Query Tagging & Monitoring
+
+### Tracking MCP Queries in Snowflake
+
+When queries are executed through the VS Code MCP agent, Snowflake automatically tags them for easy identification and monitoring. Administrators can view these in the Snowflake Query History.
+
+**View MCP Agent Queries:**
+
+1. In Snowflake UI, navigate to **Monitor → Query History**
+2. Filter by queries from your MCP service user account
+3. Look for queries with tags like:
+   - Source: `VS Code MCP Agent`
+   - Application: `snowflake-mcp`
+
+**Example Query Tag Visibility:**
+```sql
+-- In Snowflake Query History, you'll see:
+-- Query Tag: source=vscode_mcp|user=<service_account>|timestamp=<timestamp>
+-- Application: snowflake-mcp
+```
+
+**Admin Benefits:**
+- 📊 **Cost Attribution**: Track compute costs per team/project running MCP queries
+- 🔍 **Query Auditing**: Identify all queries from VS Code MCP agents
+- 📈 **Performance Monitoring**: See which queries consume the most resources
+- 🛡️ **Security & Compliance**: Audit data access from IDE tools
+
+**To Enable Custom Query Tags (Advanced):**
+
+If you want to add custom tags for your team or project:
+
+1. Modify your connection config to include custom tags:
+   ```json
+   {
+     "servers": {
+       "Snowflake": {
+         "url": "https://${SNOWFLAKE_ACCOUNT}.snowflakecomputing.com/api/v2/databases/TPCH_DATA_PRODUCT/schemas/ANALYTICS/mcp-servers/TPCH_PRODUCTS",
+         "headers": {
+           "Authorization": "Bearer ${SNOWFLAKE_PAT_TOKEN}"
+         },
+         "query_tag": "team=data_engineering|project=mcp_integration|env=prod"
+       }
+     }
+   }
+   ```
+
+2. All queries from this MCP agent will appear with these tags in Snowflake's Query History
+
+**Viewing Query Metrics:**
+
+```sql
+-- Run this in Snowflake to see all MCP queries:
+SELECT 
+  QUERY_ID,
+  QUERY_TEXT,
+  USER_NAME,
+  QUERY_TAG,
+  EXECUTION_TIME,
+  ROWS_SCANNED,
+  BYTES_SCANNED,
+  QUERY_HASH
+FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
+WHERE QUERY_TAG ILIKE '%vscode_mcp%'
+  OR QUERY_TAG ILIKE '%mcp_integration%'
+ORDER BY START_TIME DESC
+LIMIT 50;
+```
+
 ## Files to Never Commit
 
 These are already in `.gitignore`, but verify before committing:
@@ -342,12 +448,6 @@ The future of data engineering isn't about jumping between tools — it's about 
 
 **Ready to eliminate context-switching? Start with Step 1 above and connect Snowflake to VS Code today!**
 
-
-## Support
-
-For issues or questions:
-1. Check the docs/ folder
-2. Review the SQL scripts
 
 ---
 
