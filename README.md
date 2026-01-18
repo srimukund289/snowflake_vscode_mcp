@@ -431,9 +431,9 @@ These are already in `.gitignore`, but verify before committing:
 
 ## Useful Resources
 
-- [Snowflake MCP Documentation](https://docs.snowflake.com/en/user-guide/mcp)
-- [Cortex Analyst Guide](https://docs.snowflake.com/en/user-guide/cortex-analyst)
-- [Cortex Search Services](https://docs.snowflake.com/en/user-guide/cortex-search-service)
+- [Snowflake MCP Documentation](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp)
+- [Cortex Analyst Guide](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst)
+- [Cortex Search Services](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview)
 - [TPCH Sample Data](https://docs.snowflake.com/en/user-guide/sample-data-tpch)
 
 ## What's Next?
