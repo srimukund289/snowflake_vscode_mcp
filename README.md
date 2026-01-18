@@ -134,7 +134,7 @@ Then continue with detailed steps below.
    ```
    This creates the required databases (e.g., `TPCH_DATA_PRODUCT`) and analytics schemas needed for the MCP server and Cortex tools.
 
-2. Run the remaining SQL scripts in order:
+2. If you want to run the scripts one by one Run the individual SQL scripts in order:
    ```sql
    -- sql/01-setup/01_database_schema_setup.sql
    -- sql/01-setup/02_stage_setup.sql
