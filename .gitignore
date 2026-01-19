@@ -45,7 +45,6 @@ wheels/
 .DS_Store
 
 # Project specific
-Product_Analytics_Business_Report.pdf
 product_analytics.csv
 
 # OS files
