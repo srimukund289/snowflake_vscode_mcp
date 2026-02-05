@@ -1,0 +1,1 @@
+find all queries executed against the SNOWFLAKE_SAMPLE_DATA database that took longer than 5 minutes. After identifying them, analyze the query patterns and suggest specific Snowflake optimization techniques like pruning, clustering, or warehouse scaling.
