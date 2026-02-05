@@ -243,6 +243,12 @@ CREATE OR REPLACE MCP SERVER TPCH_PRODUCTS
         identifier: "TPCH_DATA_PRODUCT.ANALYTICS.SV_SALES_PERFORMANCE"
         description: "Semantic view for all tpch product tables"
         title: "Semantic view for product analytics"
+        
+      - name: "SYSTEM_EXECUTE_SQL"
+        type: "SYSTEM_EXECUTE_SQL"
+        description: "Execute arbitrary SQL commands against the Snowflake environment."
+        title: "SQL Executor"
   $$;
+
 
 -- ============================================================================
