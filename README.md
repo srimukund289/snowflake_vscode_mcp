@@ -448,10 +448,6 @@ The future of data engineering isn't about jumping between tools — it's about 
 
 **Ready to eliminate context-switching? Start with Step 1 above and connect Snowflake to VS Code today!**
 
-## Recent Actions & Project Status
-
-See [ACTIONS_LOG.md](ACTIONS_LOG.md) for a detailed log of recent enhancements and completed work including Query21 TPCH execution, MCP tool integration, long-running query analysis, and optimization techniques.
-
 ## License
 
 [Choose your license - e.g., MIT, Apache 2.0]
