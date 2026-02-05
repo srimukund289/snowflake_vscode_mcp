@@ -134,7 +134,7 @@ Then continue with detailed steps below.
    ```
    This creates the required databases (e.g., `TPCH_DATA_PRODUCT`) and analytics schemas needed for the MCP server and Cortex tools.
 
-2. Run the remaining SQL scripts in order:
+2. **Create Tables & Views**
    ```sql
    -- sql/01-setup/01_database_schema_setup.sql
    -- sql/01-setup/02_stage_setup.sql
@@ -431,9 +431,9 @@ These are already in `.gitignore`, but verify before committing:
 
 ## Useful Resources
 
-- [Snowflake MCP Documentation](https://docs.snowflake.com/en/user-guide/mcp)
-- [Cortex Analyst Guide](https://docs.snowflake.com/en/user-guide/cortex-analyst)
-- [Cortex Search Services](https://docs.snowflake.com/en/user-guide/cortex-search-service)
+- [Snowflake MCP Documentation](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents-mcp)
+- [Cortex Analyst Guide](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst)
+- [Cortex Search Services](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview)
 - [TPCH Sample Data](https://docs.snowflake.com/en/user-guide/sample-data-tpch)
 
 ## What's Next?
@@ -455,10 +455,9 @@ The future of data engineering isn't about jumping between tools — it's about 
 ## Support
 
 For issues or questions:
-1. Check the [docs/](docs/) folder
-2. Review the SQL scripts in [sql/](sql/) folder
-3. Refer to [Security Considerations](#security-considerations) section
-4. Check [Query Tagging & Monitoring](#query-tagging--monitoring) for admin monitoring
+1. Check the docs/ folder
+2. Review the SQL scripts
+3. Refer to [config/MCP_SETUP.md](config/MCP_SETUP.md)
 
 ---
 
